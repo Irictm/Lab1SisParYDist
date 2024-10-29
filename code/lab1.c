@@ -1,13 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <math.h>
 #include <string.h>
-#include <sys/wait.h>
  
 
 int main(int argc, char *argv[]){
 	//	VARIABLES
+	int optarg;
 	int option;			// option para getopt
 	int mandatory = 0;		// asegura que se entreguen ciertos argumentos de getopt
 
