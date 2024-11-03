@@ -8,6 +8,10 @@
 #include "util/FitsReader.h"
 #include "util/HoughTransform.h"
 
+/// @brief Execution modes
+enum{
+    NORMAL = 1, VIEW_BORDER = 2
+};
 
 int main(int argc, char *argv[]){
     // Input parameters definition
@@ -17,9 +21,10 @@ int main(int argc, char *argv[]){
 	long qty_smallest_axis = -1;
 	int main_threads = 1;
 	int secondary_threads = 1;
+    int mode = NORMAL;
 	
 	char option;
-	while((option = getopt(argc, argv, "i:a:r:b:u:d:")) != -1){
+	while((option = getopt(argc, argv, "i:a:r:b:u:d:e:")) != -1){
 		switch(option){
 			case 'i':
                 file_path = optarg;
@@ -39,6 +44,16 @@ int main(int argc, char *argv[]){
 			case 'd':
 				secondary_threads = atoi(optarg);
 				break;
+            case 'e':
+                switch(atoi(optarg)){
+                    case 1:
+                        mode = NORMAL;
+                        break;
+                    case 2:
+                        mode = VIEW_BORDER;
+                        break;
+                }
+                break;
 		}
 	}
 
@@ -47,21 +62,30 @@ int main(int argc, char *argv[]){
         printf("Please add the file path parameter '-i'\n");
         return -1;
     }
-    if(min_biggest_axis == -1){
-        printf("Please add the minimum minor axis parameter '-a'\n");
-        return -1;
-    }
-    if(relative_min_votes == -1){
-        printf("Please add the minimum relative votes parameter '-r'\n");
-        return -1;
-    }
-    if(qty_smallest_axis == -1){
-        printf("Please add the ammount of smallest axis parameter '-b'\n");
-        return -1;
+
+    if(mode == NORMAL){
+        if(min_biggest_axis == -1){
+            printf("Please add the minimum minor axis parameter '-a'\n");
+            return -1;
+        }
+        if(relative_min_votes == -1){
+            printf("Please add the minimum relative votes parameter '-r'\n");
+            return -1;
+        }
+        if(qty_smallest_axis == -1){
+            printf("Please add the ammount of smallest axis parameter '-b'\n");
+            return -1;
+        }
     }
 
     // Read the image and obtain the border
     FitsReader reader = FitsReader(file_path);
+    
+    if(mode == VIEW_BORDER){
+        reader.printBorder();
+        return 0;
+    }
+    
     int image_size = reader.getImageMaxSize();
     int border_count = reader.getBorderCount();
     Position** border = reader.getBorder();
