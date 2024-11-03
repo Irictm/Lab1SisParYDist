@@ -101,7 +101,7 @@ int main(int argc, char *argv[]){
     long found_ellipses_count = transform.getFoundEllipsesCount();
 
     // Print the found ellipses
-    for(int i=0; i<=found_ellipses_count; i++){
+    for(int i=0; i<found_ellipses_count; i++){
         printf("\t%i %i %.2f %.2f %.2f\n", 
             found_ellipses[i]->getPositionX(), found_ellipses[i]->getPositionY(),
             found_ellipses[i]->getBiggestAxis(), found_ellipses[i]->getSmallestAxis(),

@@ -2,20 +2,22 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <stdio.h>
 
 
 Ellipse** HoughTransform::findEllipses(Position** border, long border_count, long image_size, double min_biggest_axis, long qty_smallest_axis, double relative_min_votes){
     double smallest_axis_resolution = (double) (image_size) / qty_smallest_axis;
-    int max_qty_ellipses = image_size;
+    long max_qty_ellipses = image_size * image_size;
 
     int* votes = (int*) calloc(qty_smallest_axis, sizeof(int));
     found_ellipses = (Ellipse**) calloc(max_qty_ellipses, sizeof(Ellipse*));
-    int last_found_ellipse = -1;
+    found_ellipses_count = -1;
 
     for (int i = 0; i < border_count; i++) {
         for (int j = 0; j < border_count; j++) {
             // Resets the votes
             memset(votes, 0, qty_smallest_axis * sizeof(int));
+            long new_ellipses = 0;
 
             // Selects two positions from which calculate the ellipse
             Position* first = border[i];
@@ -56,20 +58,23 @@ Ellipse** HoughTransform::findEllipses(Position** border, long border_count, lon
                 double discrete_smallest = idx_vote * smallest_axis_resolution;
 
                 // The votes should be bigger than the required minimum of the countour of the circumference
-                if (votes[idx_vote] <= Ellipse::calcCircumference(biggest_axis, discrete_smallest) * relative_min_votes)
+                //if (votes[idx_vote] <= Ellipse::calcCircumference(biggest_axis, discrete_smallest) * relative_min_votes)
+                //    continue;
+                if(votes[idx_vote] < 10)
                     continue;
                 
-                found_ellipses[++last_found_ellipse] = new Ellipse(center, biggest_axis, discrete_smallest, angle);
+                new_ellipses++;
+                found_ellipses[++found_ellipses_count] = new Ellipse(center, biggest_axis, discrete_smallest, angle);
             }
 
             // If there is not a single found ellipse, then the center of the ellipse memory is freed
-            if(last_found_ellipse == -1)
+            if(new_ellipses == 0)
                 delete center;
         }
     }
 
-    // Updates the found ellipse count
-    found_ellipses_count = last_found_ellipse;
+    // Adds the last found ellipse to the count
+    found_ellipses_count++;
 
     return found_ellipses;
 }
