@@ -4,19 +4,23 @@ import sys
 
 from matplotlib.patches import Ellipse
 
-
-o_x   = float(sys.argv[1])
-o_y   = float(sys.argv[2])
-major = 2*float(sys.argv[3])
-minor = 2*float(sys.argv[4])
-theta = float(sys.argv[5])
+elipses = np.loadtxt("elipses.txt", dtype=[
+    ("x", int), ("y", int), 
+    ("mayor", float), ("minor", float), 
+    ("angle", float)
+])
 
 fig, ax = plt.subplots()
 ax.set(xlim=(0, 255), ylim=(255, 0), aspect="equal")
-ellipse = Ellipse((o_x, o_y), major, minor, angle=theta, alpha=1)
-ax.add_artist(ellipse)
-ellipse.set_edgecolor('k')
-ellipse.set_facecolor('w')
+for elipse in elipses:
+    viewed_ellipse = Ellipse((elipse["x"], elipse["y"]), elipse["mayor"] * 2, elipse["minor"] * 2, angle=elipse["angle"], alpha = 1)
+    ax.add_artist(
+        viewed_ellipse
+    )
+
+    viewed_ellipse.set_facecolor("w")
+    viewed_ellipse.set_edgecolor("k")
+    
 
 plt.show()
 
