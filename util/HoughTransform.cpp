@@ -58,9 +58,7 @@ Ellipse** HoughTransform::findEllipses(Position** border, long border_count, lon
                 double discrete_smallest = idx_vote * smallest_axis_resolution;
 
                 // The votes should be bigger than the required minimum of the countour of the circumference
-                //if (votes[idx_vote] <= Ellipse::calcCircumference(biggest_axis, discrete_smallest) * relative_min_votes)
-                //    continue;
-                if(votes[idx_vote] < 10)
+                if (votes[idx_vote] <= Ellipse::calcCircumference(biggest_axis, discrete_smallest) * relative_min_votes)
                     continue;
                 
                 new_ellipses++;
