@@ -6,18 +6,18 @@
 #include <omp.h>
 
 
-Ellipse** HoughTransform::findEllipses(Position** border, long border_count, long image_size, double min_biggest_axis, long qty_smallest_axis, double relative_min_votes){
+Ellipse** HoughTransform::findEllipses(Position** border, long border_count, long image_size, double min_biggest_axis, long qty_smallest_axis, double relative_min_votes, int main_threads, int secondary_threads){
     double smallest_axis_resolution = (double) (image_size) / qty_smallest_axis;
     long max_qty_ellipses = image_size * image_size;
 
     found_ellipses = (Ellipse**) calloc(max_qty_ellipses, sizeof(Ellipse*));
     found_ellipses_count = -1;
 
-    #pragma omp parallel num_threads(4)
+    #pragma omp parallel num_threads(main_threads)
     #pragma omp for
-    for (int i = 0; i < border_count; i++) {
+    for (long i = 0; i < border_count; i++) {
         int* votes = (int*) calloc(qty_smallest_axis, sizeof(int));
-        for (int j = 0; j < border_count; j++) {
+        for (long j = 0; j < border_count; j++) {
             // Resets the votes
             memset(votes, 0, qty_smallest_axis * sizeof(int));
             long new_ellipses = 0;
@@ -35,7 +35,7 @@ Ellipse** HoughTransform::findEllipses(Position** border, long border_count, lon
             Position* center = Ellipse::calcCenter(first, second);
             double angle = Ellipse::calcAngle(first, second);
 
-            #pragma omp parallel num_threads(2)
+            #pragma omp parallel num_threads(secondary_threads)
             #pragma omp for 
             // Votes for the smallest axis based on a third position
             for (int k = 0; k < border_count; k++) {
@@ -55,7 +55,7 @@ Ellipse** HoughTransform::findEllipses(Position** border, long border_count, lon
                 if (std::isnan(smallest_axis))
                     continue;
                 
-                #pragma omp critical vote
+                #pragma omp critical(vote)
                 votes[(int) round(smallest_axis / smallest_axis_resolution)]++;
             }
             
@@ -68,7 +68,7 @@ Ellipse** HoughTransform::findEllipses(Position** border, long border_count, lon
                     continue;
                 
                 new_ellipses++;
-                #pragma omp critical register_ellipse
+                #pragma omp critical(register_ellipse)
                 found_ellipses[++found_ellipses_count] = new Ellipse(center, biggest_axis, discrete_smallest, angle);
             }
 

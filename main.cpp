@@ -96,7 +96,8 @@ int main(int argc, char *argv[]){
         border, border_count, 
         image_size, 
         min_biggest_axis, qty_smallest_axis, 
-        relative_min_votes
+        relative_min_votes,
+        main_threads, secondary_threads
     );
     long found_ellipses_count = transform.getFoundEllipsesCount();
 

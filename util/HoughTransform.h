@@ -11,7 +11,7 @@ class HoughTransform
     /// @param border_count 
     /// @param image_size 
     /// @return 
-    Ellipse** findEllipses(Position** border, long border_count, long image_size, double min_biggest_axis, long qty_smallest_axis, double relative_min_votes);
+    Ellipse** findEllipses(Position** border, long border_count, long image_size, double min_biggest_axis, long qty_smallest_axis, double relative_min_votes, int main_threads, int secondary_threads);
     
     /// @brief Gets the ammount of ellipses found
     /// @return 
