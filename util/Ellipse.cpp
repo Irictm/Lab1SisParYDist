@@ -8,7 +8,7 @@ Ellipse::Ellipse(Position* center, double biggest_axis, double smallest_axis, do
     angle(angle){}
 
 double Ellipse::calcBiggestAxis(Position* first, Position* second){
-    return sqrt(first->distSqrd(second));
+    return sqrt(first->distSqrd(second)) / 2.0;
 }
 
 Position* Ellipse::calcCenter(Position* first, Position* second){
