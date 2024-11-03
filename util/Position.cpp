@@ -1,5 +1,6 @@
 #include "Position.h"
 
+
 Position::Position(int x, int y): x(x), y(y){}
 
 double Position::distSqrd(Position* other){

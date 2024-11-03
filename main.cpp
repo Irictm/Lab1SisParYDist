@@ -4,23 +4,25 @@
 #include <math.h>
 #include "util/Position.h"
 #include "util/Ellipse.h"
+#include "util/FitsReader.h"
 
 
 int main(){
     // Read the image and obtain the border
-    int image_size = 2000;
-    int border_count = 1000;
-    Position* border[border_count];
+    FitsReader reader = FitsReader("elipsesimple1.fits");
+    int image_size = reader.getImageMaxSize();
+    int border_count = reader.getBorderCount();
+    Position** border = reader.getBorder();
     
     int smallest_axis_resolution = 2;
     int qty_smallest_axis = image_size / smallest_axis_resolution;
     double min_biggest_axis = 5; // alpha
     int max_qty_ellipses = image_size;
-    
+
     double biggest_axis = 0;
     double angle = 0;
     double smallest_axis = 0;
-    int relative_min_votes = 10;
+    int relative_min_votes = 100;
 
     int* votes = (int*) calloc(qty_smallest_axis, sizeof(int));
     Ellipse** found_ellipses = (Ellipse**) calloc(max_qty_ellipses, sizeof(Ellipse*));
@@ -47,7 +49,7 @@ int main(){
             // Votes for the smallest axis based on a third position
             for (int k = 0; k < border_count; k++) {
                 // Only process those positions different from the current two
-                if (k != i && k != j)
+                if (k == i || k == j)
                     continue;
 
                 Position* third = border[k];
@@ -58,11 +60,15 @@ int main(){
 
                 // Vote for the calculated smallest axis
                 smallest_axis = Ellipse::calcSmallestAxis(center, third, biggest_axis, angle);
-                votes[(int) round(smallest_axis)]++;
+
+                if(std::isnan(smallest_axis))
+                    continue;
+
+                votes[(int) round(smallest_axis / smallest_axis_resolution)]++;
             }
             
             // Filters out all the invalid ellipses based on the votes of the smallest axis size
-            for (int idx_vote = 0; idx_vote < image_size; idx_vote++){
+            for (int idx_vote = 0; idx_vote < qty_smallest_axis; idx_vote++){
                 if (votes[idx_vote] <= relative_min_votes)
                     continue;
                 
@@ -75,7 +81,6 @@ int main(){
         }
     }
 
-    printf("Ellipses:\n");
     for(int i=0; i<=last_found_ellipse; i++){
         printf("\t%i %i %.2f %.2f %.2f\n", 
             found_ellipses[i]->getPositionX(), found_ellipses[i]->getPositionY(),
@@ -83,5 +88,4 @@ int main(){
             found_ellipses[i]->getAngle()
         );
     }
-    printf("End\n");
 }
