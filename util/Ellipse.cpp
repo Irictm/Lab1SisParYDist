@@ -1,6 +1,6 @@
 #include "Ellipse.h"
 #include <math.h>
-
+#define PI 3.1415
 
 Ellipse::Ellipse(Position* center, double biggest_axis, double smallest_axis, double angle):
     center(center), 
@@ -28,4 +28,8 @@ double Ellipse::calcSmallestAxis(Position* center, Position* point, double bigge
     gamma_sqrd *= gamma_sqrd;
 
 	return sqrt((biggest_axis_sqrd * delta_sqrd - biggest_axis_sqrd * gamma_sqrd)/(biggest_axis_sqrd - gamma_sqrd));
+}
+
+double Ellipse::calcCircumference(double biggest_axis, double smallest_axis){
+    return PI * (biggest_axis + smallest_axis);
 }

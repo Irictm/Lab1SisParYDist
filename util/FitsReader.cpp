@@ -29,3 +29,10 @@ FitsReader::FitsReader(char* file_path){
         }
     }
 }
+
+
+void FitsReader::printBorder(){
+    for(int i=0; i<border_count; i++){
+        printf("%d %d", border[i]->x, border[i]->y);
+    }
+}

@@ -15,6 +15,7 @@ class Ellipse
     static Position* calcCenter(Position* first, Position* second);
     static double calcAngle(Position* first, Position* second);
     static double calcSmallestAxis(Position* center, Position* point, double biggest_axis, double angle);
+    static double calcCircumference(double biggest_axis, double smallest_axis);
 
 
     int getPositionX(){ return center->x; };
