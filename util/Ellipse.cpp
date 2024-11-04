@@ -23,8 +23,8 @@ double Ellipse::calcSmallestAxis(Position* center, Position* point, double bigge
 	double biggest_axis_sqrd = biggest_axis * biggest_axis;
     double delta_sqrd = center->distSqrd(point);
 	double gamma_sqrd = 
-        sin(angle) * (point->y - center->y) + 
-        cos(angle) * (point->x - center->x);
+        sin(abs(angle)) * (point->y - center->y) + 
+        cos(abs(angle)) * (point->x - center->x);
     gamma_sqrd *= gamma_sqrd;
 
 	return sqrt((biggest_axis_sqrd * delta_sqrd - biggest_axis_sqrd * gamma_sqrd)/(biggest_axis_sqrd - gamma_sqrd));
