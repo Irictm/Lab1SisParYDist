@@ -81,6 +81,7 @@ int main(int argc, char *argv[]){
     // Read the image and obtain the border
     FitsReader reader = FitsReader(file_path);
     
+    // Debug execution option for viewing the points of the FITS file
     if(mode == VIEW_BORDER){
         reader.printBorder();
         return 0;
@@ -91,22 +92,43 @@ int main(int argc, char *argv[]){
     Position** border = reader.getBorder();
     
     // Search for the ellipses
-    HoughTransform transform = HoughTransform();
-    Ellipse** found_ellipses = transform.findEllipses(
+    HoughTransform transform_single = HoughTransform();
+    Ellipse** found_ellipses = transform_single.findEllipses(
+        border, border_count, 
+        image_size, 
+        min_biggest_axis, qty_smallest_axis, 
+        relative_min_votes,
+        1, 1
+    );
+    long found_ellipses_count = transform_single.getFoundEllipsesCount();
+
+    // Search for the ellipses in a multithread environment
+    HoughTransform transform_multi = HoughTransform();
+    Ellipse** found_ellipses_2 = transform_multi.findEllipses(
         border, border_count, 
         image_size, 
         min_biggest_axis, qty_smallest_axis, 
         relative_min_votes,
         main_threads, secondary_threads
     );
-    long found_ellipses_count = transform.getFoundEllipsesCount();
 
     // Print the found ellipses
     for(int i=0; i<found_ellipses_count; i++){
-        printf("\t%i %i %.2f %.2f %.2f\n", 
+        printf("%i\t%i\t%f\t%f\t%f\n", 
             found_ellipses[i]->getPositionX(), found_ellipses[i]->getPositionY(),
             found_ellipses[i]->getBiggestAxis(), found_ellipses[i]->getSmallestAxis(),
             found_ellipses[i]->getAngle()
         );
     }
+
+    // Print speed statistics
+    double total_single_time = transform_single.getHoughTime() + transform_single.getSerialTime();
+    double total_multi_time = transform_multi.getHoughTime() + transform_multi.getSerialTime();
+    printf("%f\n", total_single_time);
+    printf("%f\n", total_multi_time);
+    printf("%f%%\n", transform_multi.getSerialTime() / total_single_time);
+    printf("%f\n", total_single_time / total_multi_time);
+    printf("%f\n", transform_single.getHoughTime());
+    printf("%f\n", transform_multi.getHoughTime());
+    printf("%f\n", transform_single.getHoughTime() / transform_multi.getHoughTime());
 }

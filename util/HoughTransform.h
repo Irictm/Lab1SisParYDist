@@ -17,9 +17,22 @@ class HoughTransform
     /// @return 
     long getFoundEllipsesCount(){ return found_ellipses_count; }
 
+    /// @brief Gets the time that the serial part of the program elapsed.
+    /// @return 
+    double getSerialTime(){ return serial_time; }
+
+    /// @brief Gets the time that the Hough transform part of the program elapsed.
+    /// @return 
+    double getHoughTime(){ return hough_time; }
+
     private:
+    // Hough transform results
     Ellipse** found_ellipses;
     long found_ellipses_count = -1;
+
+    // Time of execution results
+    double serial_time;
+    double hough_time;
 };
 
 #endif
